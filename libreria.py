@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import quad 
 
+# TROVARE ZERI ED ESTREMI 
 # Trova minimo [metodo Bisezione]
 def bisezione(xmin, xmax, f, prec = 0.0001 , max_attempts = 10000) : 
 	if f(xmin)*f(xmax) >= 0 :
@@ -24,7 +25,6 @@ def max1(f, xmin, xmax, prec=0.0001, max_attempts=10000): #(attenzione segni cam
     x1 = xmin + phi * (xmax - xmin)
     x2 = xmin + (1 - phi) * (xmax - xmin)
     i = 0
-    #log_likelihood_func = lambda theta: loglikelihood(theta, exp_pdf, randlist) (è un refuso? cancella)
     while abs(xmax - xmin) > prec and i < max_attempts:
         if f(x2) < f(x1):
             xmin = x2
@@ -38,11 +38,12 @@ def max1(f, xmin, xmax, prec=0.0001, max_attempts=10000): #(attenzione segni cam
     x_max = (x1 + x2) / 2
     return x_max, f(x_max)
 
-# Calcola integrale [Hit or Miss] (funzione positiva)
-def integral(f, xmin, xmax, ymin, ymax , N_evt) :  
+# CALCOLO DI INTEGRALI 
+# Calcola integrale [Hit or Miss] (qualsiasi funzione)
+def integral_HoM(f, xmin, xmax, ymin, ymax , N_evt) :  
 	x_coord = np.random.uniform(xmin, xmax, N_evt)
 	y_coord = np.random.uniform(ymin, ymax, N_evt)
-	f_coord = f(x_coord)
+	f_coord = f(x_coord) # lo modificherò perchè così 'f' restituisce array (fare ciclo se restituisce un valore solo)
 	nhits = np.sum((y_coord>=0) & (y_coord<=f_coord))-np.sum((y_coord<0) & (y_coord>f_coord))
 	'''arrayerr = [integral(func, 0, 2*np.pi, -1,1, x) for x in range(100,N_max,20)]
 	y_coord = list(arrayerr[i][0] for i in range(len(arrayerr)))
@@ -69,6 +70,14 @@ def integral_scipy(f, a, b) :
   return integral[0], integral[1]
 
 
+# LIKELIHOOD
+def likelihood (theta, pdf, sample):
+	value = 1
+	for x in sample: 
+		value *= pdf(x, theta)
+	return value 
+
+# Log-likelihood
 def loglikelihood (theta, pdf, lista) :
 	r = 0 
 	for x in lista :
@@ -76,10 +85,12 @@ def loglikelihood (theta, pdf, lista) :
 			r = r + np.log(pdf(x, theta))
 	return r
 
+# PDF's 
 # Gaussiana standardizzata 
 def Gaussian(x, mu = 0, sigma = 1) :
 	return (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-((x - mu)**2) / (2 * sigma**2))
-  
-	
+
+
+
 
 
